@@ -2604,12 +2604,12 @@ class CustomJob(_RunnableJob, base.PreviewMixin):
             or restart_job_on_worker_restart
             or disable_retries
             or scheduling_strategy
-            or max_wait_duration
+            or max_wait_duration is not None  # 0 is a valid value
         ):
             timeout = duration_pb2.Duration(seconds=timeout) if timeout else None
             max_wait_duration = (
                 duration_pb2.Duration(seconds=max_wait_duration)
-                if max_wait_duration
+                if max_wait_duration is not None
                 else None
             )
             self._gca_resource.job_spec.scheduling = gca_custom_job_compat.Scheduling(
@@ -3133,13 +3133,13 @@ class HyperparameterTuningJob(_RunnableJob, base.PreviewMixin):
             timeout
             or restart_job_on_worker_restart
             or disable_retries
-            or max_wait_duration
+            or max_wait_duration is not None  # 0 is a valid value
             or scheduling_strategy
         ):
             timeout = duration_pb2.Duration(seconds=timeout) if timeout else None
             max_wait_duration = (
                 duration_pb2.Duration(seconds=max_wait_duration)
-                if max_wait_duration
+                if max_wait_duration is not None
                 else None
             )
             self._gca_resource.trial_job_spec.scheduling = (
