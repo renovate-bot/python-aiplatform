@@ -253,6 +253,119 @@ def _extract_contents_for_inference(
         return request_dict_or_raw_text
 
 
+def _eval_cases_to_dataframe(
+    eval_cases: list[types.EvalCase],
+) -> pd.DataFrame:
+    """Converts a list of EvalCase objects to a pandas DataFrame.
+
+    Each EvalCase is converted to a row in the DataFrame. Structured fields
+    like ``agent_data`` are preserved as-is (not flattened) so that downstream
+    agent execution paths can consume them directly.
+
+    Args:
+        eval_cases: The list of EvalCase objects to convert.
+
+    Returns:
+        A DataFrame with one row per EvalCase.
+    """
+    rows = []
+    for case in eval_cases:
+        row: dict[str, Any] = {}
+        if case.prompt:
+            row[_evals_constant.PROMPT] = _evals_data_converters._get_content_text(
+                case.prompt
+            )
+
+        if case.responses and len(case.responses) > 0 and case.responses[0].response:
+            row[_evals_constant.RESPONSE] = _evals_data_converters._get_content_text(
+                case.responses[0].response
+            )
+
+        if case.reference and case.reference.response:
+            row[_evals_constant.REFERENCE] = _evals_data_converters._get_content_text(
+                case.reference.response
+            )
+
+        if case.agent_data:
+            row[AGENT_DATA] = case.agent_data
+
+        if case.intermediate_events:
+            row[_evals_constant.INTERMEDIATE_EVENTS] = [
+                {CONTENT: event.content}
+                for event in case.intermediate_events
+                if event.content
+            ]
+
+        if case.conversation_history:
+            history_parts = []
+            for msg in case.conversation_history:
+                if msg.content:
+                    role = msg.content.role or "user"
+                    text = _evals_data_converters._get_content_text(msg.content)
+                    history_parts.append(f"{role}: {text}")
+            if history_parts:
+                row[_evals_constant.CONVERSATION_HISTORY] = "\n".join(history_parts)
+
+        if case.user_scenario:
+            if case.user_scenario.starting_prompt:
+                row[_evals_constant.STARTING_PROMPT] = (
+                    case.user_scenario.starting_prompt
+                )
+            if case.user_scenario.conversation_plan:
+                row[_evals_constant.CONVERSATION_PLAN] = (
+                    case.user_scenario.conversation_plan
+                )
+
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def _extract_prompt_from_agent_data(
+    agent_data: types.evals.AgentData,
+) -> tuple[genai_types.Content, list[types.evals.AgentEvent]]:
+    """Extracts the last user message and prior events from agent_data.
+
+    The last event across all turns must be authored by ``"user"``; it is
+    treated as the current prompt that the agent should respond to.
+    Everything before it is returned as conversation history.
+
+    Args:
+        agent_data: The AgentData containing conversation turns.
+
+    Returns:
+        A tuple of ``(last_user_content, history_events)`` where
+        ``last_user_content`` is the ``Content`` of the final user event
+        and ``history_events`` is the ordered list of all prior
+        ``AgentEvent`` objects.
+
+    Raises:
+        ValueError: If ``agent_data`` has no turns, no events, or the last
+            event is not a user event.
+    """
+    if not agent_data.turns:
+        raise ValueError("agent_data must have at least one turn.")
+
+    all_events: list[types.evals.AgentEvent] = []
+    for turn in agent_data.turns:
+        if turn.events:
+            all_events.extend(turn.events)
+
+    if not all_events:
+        raise ValueError("agent_data turns contain no events.")
+
+    last_event = all_events[-1]
+    if last_event.author != USER_AUTHOR:
+        raise ValueError(
+            "agent_data must end with a user event, but the last event has"
+            f" author='{last_event.author}'."
+        )
+
+    if not last_event.content:
+        raise ValueError("The last user event in agent_data has no content.")
+
+    return last_event.content, all_events[:-1]
+
+
 def _resolve_dataset(
     api_client: BaseApiClient,
     dataset: Union[types.EvaluationRunDataSource, types.EvaluationDataset],
@@ -264,66 +377,7 @@ def _resolve_dataset(
         candidate_name = _get_candidate_name(dataset, parsed_agent_info)
         eval_df = dataset.eval_dataset_df
         if eval_df is None and dataset.eval_cases:
-            rows = []
-            for case in dataset.eval_cases:
-                row: dict[str, Any] = {}
-                if case.prompt:
-                    row[_evals_constant.PROMPT] = (
-                        _evals_data_converters._get_content_text(case.prompt)
-                    )
-
-                if (
-                    case.responses
-                    and len(case.responses) > 0
-                    and case.responses[0].response
-                ):
-                    row[_evals_constant.RESPONSE] = (
-                        _evals_data_converters._get_content_text(
-                            case.responses[0].response
-                        )
-                    )
-
-                if case.reference and case.reference.response:
-                    row[_evals_constant.REFERENCE] = (
-                        _evals_data_converters._get_content_text(
-                            case.reference.response
-                        )
-                    )
-
-                if case.agent_data:
-                    row[AGENT_DATA] = case.agent_data
-
-                if case.intermediate_events:
-                    row[_evals_constant.INTERMEDIATE_EVENTS] = [
-                        {CONTENT: event.content}
-                        for event in case.intermediate_events
-                        if event.content
-                    ]
-
-                if case.conversation_history:
-                    history_parts = []
-                    for msg in case.conversation_history:
-                        if msg.content:
-                            role = msg.content.role or "user"
-                            text = _evals_data_converters._get_content_text(msg.content)
-                            history_parts.append(f"{role}: {text}")
-                    if history_parts:
-                        row[_evals_constant.CONVERSATION_HISTORY] = "\n".join(
-                            history_parts
-                        )
-
-                if case.user_scenario:
-                    if case.user_scenario.starting_prompt:
-                        row[_evals_constant.STARTING_PROMPT] = (
-                            case.user_scenario.starting_prompt
-                        )
-                    if case.user_scenario.conversation_plan:
-                        row[_evals_constant.CONVERSATION_PLAN] = (
-                            case.user_scenario.conversation_plan
-                        )
-
-                rows.append(row)
-            eval_df = pd.DataFrame(rows)
+            eval_df = _eval_cases_to_dataframe(dataset.eval_cases)
 
         eval_set = _create_evaluation_set_from_dataframe(
             api_client,
@@ -500,25 +554,54 @@ def _execute_inference_concurrently(
     ] = [None] * len(prompt_dataset)
     tasks = []
 
-    if "request" in prompt_dataset.columns:
-        primary_prompt_column = "request"
-    elif "prompt" in prompt_dataset.columns:
-        primary_prompt_column = "prompt"
-    elif "starting_prompt" in prompt_dataset.columns:
-        primary_prompt_column = "starting_prompt"
-    else:
-        raise ValueError(
-            "Dataset must contain either 'prompt', 'request', or 'starting_prompt'."
-            f" Found: {prompt_dataset.columns.tolist()}"
-        )
+    # When running with an agent and agent_data is present, we extract the
+    # prompt from the structured agent_data rather than requiring a flat
+    # prompt/request column.
+    has_agent_data = (
+        agent is not None or agent_engine is not None
+    ) and AGENT_DATA in prompt_dataset.columns
+
+    primary_prompt_column: Optional[str] = None
+    if not has_agent_data:
+        if "request" in prompt_dataset.columns:
+            primary_prompt_column = "request"
+        elif "prompt" in prompt_dataset.columns:
+            primary_prompt_column = "prompt"
+        elif "starting_prompt" in prompt_dataset.columns:
+            primary_prompt_column = "starting_prompt"
+        else:
+            raise ValueError(
+                "Dataset must contain either 'prompt', 'request', or"
+                " 'starting_prompt'."
+                f" Found: {prompt_dataset.columns.tolist()}"
+            )
 
     max_workers = AGENT_MAX_WORKERS if agent_engine or agent else MAX_WORKERS
     with tqdm(total=len(prompt_dataset), desc=progress_desc) as pbar:
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             for index, row in prompt_dataset.iterrows():
-                request_dict_or_raw_text = row[primary_prompt_column]
                 try:
-                    contents = _extract_contents_for_inference(request_dict_or_raw_text)
+                    if (
+                        has_agent_data
+                        and AGENT_DATA in row.index
+                        and row.get(AGENT_DATA) is not None
+                    ):
+                        agent_data_obj = row[AGENT_DATA]
+                        if isinstance(agent_data_obj, dict):
+                            agent_data_obj = types.evals.AgentData.model_validate(
+                                agent_data_obj
+                            )
+                        last_user_content, _ = _extract_prompt_from_agent_data(
+                            agent_data_obj
+                        )
+                        contents = _evals_data_converters._get_content_text(
+                            last_user_content
+                        )
+                    else:
+                        request_dict_or_raw_text = row[primary_prompt_column]
+                        contents = _extract_contents_for_inference(
+                            request_dict_or_raw_text
+                        )
                 except ValueError as e:
                     error_message = (
                         f"Failed to extract contents for prompt at index {index}: {e}. "
@@ -696,8 +779,7 @@ def _run_litellm_inference(
 ) -> list[Optional[dict[str, Any]]]:
     """Runs inference using LiteLLM with concurrency."""
     logger.info(
-        "Generating responses for %d prompts using LiteLLM for third party"
-        " model: %s",
+        "Generating responses for %d prompts using LiteLLM for third party model: %s",
         len(prompt_dataset),
         model,
     )
@@ -1843,6 +1925,14 @@ def _create_agent_results_dataframe(
     prompt_dataset_indexed = prompt_dataset.reset_index(drop=True)
     results_df_responses_only_indexed = results_df_raw.reset_index(drop=True)
 
+    # Drop columns from input that will be overwritten by results to avoid
+    # duplicate columns after concatenation (e.g. agent_data).
+    overlap = prompt_dataset_indexed.columns.intersection(
+        results_df_responses_only_indexed.columns
+    )
+    if not overlap.empty:
+        prompt_dataset_indexed = prompt_dataset_indexed.drop(columns=overlap)
+
     results_df = pd.concat(
         [prompt_dataset_indexed, results_df_responses_only_indexed], axis=1
     )
@@ -2046,6 +2136,16 @@ def _execute_agent_run_with_retry(
     max_retries: int = 3,
 ) -> Union[list[dict[str, Any]], dict[str, Any]]:
     """Executes agent run over agent engine for a single prompt."""
+    # TODO(b/507976585): Support agent_data history replay for Agent Engine
+    # sessions. Requires appending history events to the remote session via
+    # the Sessions API before calling stream_query.
+    if AGENT_DATA in row.index and row.get(AGENT_DATA) is not None:
+        raise NotImplementedError(
+            "Conversation history replay from agent_data is not yet supported"
+            " for remote Agent Engine inference. Use a local ADK agent"
+            " (LlmAgent) instead, or provide a DataFrame with a 'prompt'"
+            " column."
+        )
     try:
         session_inputs = _get_session_inputs(row)
         user_id = session_inputs.user_id
@@ -2132,8 +2232,94 @@ async def _execute_local_agent_run_with_retry_async(
             logger.error("Multi-turn agent run with user simulation failed: %s", e)
             return {"error": f"Multi-turn agent run with user simulation failed: {e}"}
 
+    # Agent data with conversation history — pre-populate the session with
+    # prior turns so the agent sees them as context, then send the last user
+    # message as the new query.
+    if AGENT_DATA in row.index and row.get(AGENT_DATA) is not None:
+        from google.adk.events.event import Event as AdkEvent
+
+        agent_data_obj = row[AGENT_DATA]
+        if isinstance(agent_data_obj, dict):
+            agent_data_obj = types.evals.AgentData.model_validate(agent_data_obj)
+        if isinstance(agent_data_obj, types.evals.AgentData) and agent_data_obj.turns:
+            try:
+                last_user_content, history_events = _extract_prompt_from_agent_data(
+                    agent_data_obj
+                )
+            except ValueError as e:
+                return {"error": f"Invalid agent_data for inference: {e}"}
+
+            user_id = str(uuid.uuid4())
+            session_id = str(uuid.uuid4())
+            app_name = "local agent run"
+            if "session_inputs" in row.index and row.get("session_inputs") is not None:
+                session_inputs = _get_session_inputs(row)
+                user_id = session_inputs.user_id or user_id
+                app_name = session_inputs.app_name or app_name
+            session_service = InMemorySessionService()
+            await session_service.create_session(
+                app_name=app_name, user_id=user_id, session_id=session_id
+            )
+
+            # Pre-populate session with history events so the agent sees
+            # prior conversation context.
+            internal_session = session_service.sessions[app_name][user_id][session_id]
+            for ag_event in history_events:
+                adk_event = AdkEvent(
+                    author=ag_event.author or "user",
+                    content=ag_event.content,
+                    invocation_id="history",
+                )
+                internal_session.events.append(adk_event)
+
+            agent_runner = Runner(
+                agent=agent, app_name=app_name, session_service=session_service
+            )
+
+            with _temp_logger_level("google_genai.types", logging.ERROR):
+                for attempt in range(max_retries):
+                    try:
+                        events = []
+                        async for event in agent_runner.run_async(
+                            user_id=user_id,
+                            session_id=session_id,
+                            new_message=last_user_content,
+                        ):
+                            if event:
+                                event = event.model_dump(exclude_none=True)
+                            if event and CONTENT in event and PARTS in event[CONTENT]:
+                                events.append(event)
+                        return events
+                    except api_exceptions.ResourceExhausted as e:
+                        logger.warning(
+                            "Resource Exhausted error on attempt %d/%d: %s."
+                            " Retrying in %s seconds...",
+                            attempt + 1,
+                            max_retries,
+                            e,
+                            2**attempt,
+                        )
+                        if attempt == max_retries - 1:
+                            return {"error": f"Resource exhausted after retries: {e}"}
+                        await asyncio.sleep(2**attempt)
+                    except Exception as e:  # pylint: disable=broad-exception-caught
+                        logger.error(
+                            "Unexpected error during agent run on attempt %d/%d: %s",
+                            attempt + 1,
+                            max_retries,
+                            e,
+                        )
+                        if attempt == max_retries - 1:
+                            return {"error": f"Failed after retries: {e}"}
+                        await asyncio.sleep(1)
+                return {
+                    "error": (
+                        f"Failed to get agent run results after {max_retries} retries"
+                    )
+                }
+
     session_inputs = _get_session_inputs(row)
-    user_id = session_inputs.user_id
+    user_id = session_inputs.user_id or str(uuid.uuid4())
     session_id = str(uuid.uuid4())
     app_name = session_inputs.app_name or "local agent run"
     # TODO: Enable user to set up session service.
@@ -2613,8 +2799,7 @@ def _get_content(row: dict[str, Any], column: str) -> Optional[genai_types.Conte
         return cast(genai_types.Content, row[column])
     else:
         raise ValueError(
-            f"{column} must be a string or a Content object. Got"
-            f" {type(row[column])}."
+            f"{column} must be a string or a Content object. Got {type(row[column])}."
         )
 
 
