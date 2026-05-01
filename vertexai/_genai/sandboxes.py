@@ -630,6 +630,7 @@ class Sandboxes(_api_module.BaseModule):
         return return_value
 
     _templates = None
+    _snapshots = None
 
     @property
     def templates(self) -> Any:
@@ -640,11 +641,26 @@ class Sandboxes(_api_module.BaseModule):
                 )
             except ImportError as e:
                 raise ImportError(
-                    "The 'agent_engines.sandboxes.sandbox_templates' module requires "
+                    "The 'agent_engines.sandboxes.templates' module requires "
                     "additional packages. Please install them using pip install "
                     "google-cloud-aiplatform[agent_engines]"
                 ) from e
         return self._templates.SandboxTemplates(self._api_client)
+
+    @property
+    def snapshots(self) -> Any:
+        if self._snapshots is None:
+            try:
+                self._snapshots = __import__("importlib").import_module(
+                    ".sandbox_snapshots", __package__
+                )
+            except ImportError as e:
+                raise ImportError(
+                    "The 'agent_engines.sandboxes.snapshots' module requires "
+                    "additional packages. Please install them using pip install "
+                    "google-cloud-aiplatform[sandbox_snapshots]"
+                ) from e
+        return self._snapshots.SandboxSnapshots(self._api_client)
 
     def create(
         self,
