@@ -30,7 +30,7 @@ from google.cloud.aiplatform.compat.services import (
 from google.cloud.aiplatform_v1beta1.services.feature_registry_service import (
     FeatureRegistryServiceClient,
 )
-from feature_store_constants import (
+from vertexai_feature_store_constants import (
     _TEST_FG1_F1_DESCRIPTION,
     _TEST_FG1_F1_FEATURE_STATS_AND_ANOMALY,
     _TEST_FG1_F1_ID,

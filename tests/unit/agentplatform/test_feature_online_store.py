@@ -28,7 +28,7 @@ from google.cloud.aiplatform.compat import types
 from google.cloud.aiplatform.compat.services import (
     feature_online_store_admin_service_client,
 )
-from feature_store_constants import (
+from .feature_store_constants import (
     _TEST_BIGTABLE_FOS1_ID,
     _TEST_BIGTABLE_FOS1_LABELS,
     _TEST_BIGTABLE_FOS1_PATH,
@@ -74,8 +74,8 @@ from feature_store_constants import (
     _TEST_PSC_OPTIMIZED_FOS_PATH,
     _TEST_PSC_PROJECT_ALLOWLIST,
 )
-from test_feature_view import fv_eq
-from vertexai.resources.preview import (
+from .test_feature_view import fv_eq
+from agentplatform.resources.preview import (
     DistanceMeasureType,
     FeatureOnlineStore,
     FeatureOnlineStoreType,
@@ -85,7 +85,7 @@ from vertexai.resources.preview import (
     IndexConfig,
     TreeAhConfig,
 )
-from vertexai.resources.preview.feature_store import (
+from agentplatform.resources.preview.feature_store import (
     feature_online_store,
 )
 import pytest

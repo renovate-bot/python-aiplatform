@@ -36,7 +36,7 @@ from vertexai.resources.preview.feature_store import (
     feature_view,
 )
 
-from feature_store_constants import (
+from vertexai_feature_store_constants import (
     _TEST_BIGTABLE_FOS1_ID,
     _TEST_BIGTABLE_FOS1_PATH,
     _TEST_EMBEDDING_FV1_PATH,

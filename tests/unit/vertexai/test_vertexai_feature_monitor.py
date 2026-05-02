@@ -22,7 +22,7 @@ from unittest.mock import patch
 from google.cloud import aiplatform
 from google.cloud.aiplatform import base
 
-from feature_store_constants import (
+from vertexai_feature_store_constants import (
     _TEST_PROJECT,
     _TEST_LOCATION,
     _TEST_FG1_ID,

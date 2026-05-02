@@ -43,7 +43,7 @@ from google.cloud.aiplatform.compat.services import (
 from google.cloud.aiplatform.compat import types
 
 
-from feature_store_constants import (
+from vertexai_feature_store_constants import (
     _TEST_PARENT,
     _TEST_PROJECT,
     _TEST_LOCATION,
@@ -95,8 +95,8 @@ from feature_store_constants import (
     _TEST_FG1_FM2_SCHEDULE_CONFIG,
     _TEST_FG1_FM_LIST,
 )
-from test_feature import feature_eq
-from test_feature_monitor import (
+from test_vertexai_feature import feature_eq
+from test_vertexai_feature_monitor import (
     feature_monitor_eq,
 )
 
