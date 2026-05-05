@@ -21,7 +21,10 @@ ENV PATH /usr/local/bin:$PATH
 
 # Install dependencies.
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
+  && apt-get install -y ca-certificates --fix-missing \
+  && update-ca-certificates
+
+RUN apt-get install -y --no-install-recommends \
     apt-transport-https \
     build-essential \
     ca-certificates \

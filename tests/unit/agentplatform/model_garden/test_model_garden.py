@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ from google.cloud.aiplatform_v1.types import machine_resources
 from google.cloud.aiplatform_v1.types import manual_batch_tuning_parameters
 from google.cloud.aiplatform_v1beta1 import types
 from google.cloud.aiplatform_v1beta1.services import model_garden_service
-from vertexai import batch_prediction
-from vertexai import model_garden
-from vertexai.preview import (
+from agentplatform import batch_prediction
+from agentplatform import model_garden
+from agentplatform.preview import (
     model_garden as model_garden_preview,
 )
 import pytest
