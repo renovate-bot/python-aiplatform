@@ -27,9 +27,9 @@ def test_sandbox_templates_default_create(client):
             "internet_access": True,
         },
     }
-    sandbox_template_operation = client.agent_engines.sandboxes.templates.create(
+    sandbox_template_operation = client.agent_engines.sandboxes.templates._create(
         name=(
-            "projects/254005681254/locations/us-central1/reasoningEngines/208148546254274560"
+            "projects/802583348448/locations/us-central1/reasoningEngines/6130241318758121472"
         ),
         display_name="Test Sandbox Template 1",
         config=config,
@@ -42,5 +42,5 @@ def test_sandbox_templates_default_create(client):
 pytestmark = pytest_helper.setup(
     file=__file__,
     globals_for_file=globals(),
-    test_method="agent_engines.sandboxes.templates.create",
+    test_method="agent_engines.sandboxes.templates._create",
 )

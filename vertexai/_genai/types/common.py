@@ -13510,6 +13510,10 @@ class CreateAgentEngineSandboxSnapshotConfig(_common.BaseModel):
         default=None,
         description="""The TTL for this resource. The expiration time is computed: now + TTL.""",
     )
+    wait_for_completion: Optional[bool] = Field(
+        default=True,
+        description="""Waits for the operation to complete before returning.""",
+    )
 
 
 class CreateAgentEngineSandboxSnapshotConfigDict(TypedDict, total=False):
@@ -13526,6 +13530,9 @@ class CreateAgentEngineSandboxSnapshotConfigDict(TypedDict, total=False):
 
     ttl: Optional[str]
     """The TTL for this resource. The expiration time is computed: now + TTL."""
+
+    wait_for_completion: Optional[bool]
+    """Waits for the operation to complete before returning."""
 
 
 CreateAgentEngineSandboxSnapshotConfigOrDict = Union[

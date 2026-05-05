@@ -21,7 +21,7 @@ from vertexai._genai import types
 
 
 def test_create_sandbox_snapshot(client):
-    snapshot = client.agent_engines.sandboxes.snapshots.create(
+    snapshot = client.agent_engines.sandboxes.snapshots._create(
         source_sandbox_environment_name="projects/802583348448/locations/us-central1/reasoningEngines/6130241318758121472/sandboxEnvironments/525190525100228608",
         config={
             "display_name": "test_snapshot",
@@ -36,5 +36,5 @@ def test_create_sandbox_snapshot(client):
 pytestmark = pytest_helper.setup(
     file=__file__,
     globals_for_file=globals(),
-    test_method="agent_engines.sandboxes.snapshots.create",
+    test_method="agent_engines.sandboxes.snapshots._create",
 )

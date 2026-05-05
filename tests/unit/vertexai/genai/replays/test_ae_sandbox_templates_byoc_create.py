@@ -50,7 +50,7 @@ def test_sandbox_templates_byoc_create(client):
     }
     sandbox_template_operation = client.agent_engines.sandboxes.templates.create(
         name=(
-            "projects/254005681254/locations/us-central1/reasoningEngines/208148546254274560"
+            "projects/802583348448/locations/us-central1/reasoningEngines/6130241318758121472"
         ),
         display_name="Test Sandbox Template 1",
         config=config,
