@@ -150,7 +150,7 @@ pytestmark = pytest.mark.usefixtures("google_auth_mock")
 def test_init(online_store_name, get_fos_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fos = FeatureOnlineStore(online_store_name)
+    fos = FeatureOnlineStore(name=online_store_name)
 
     get_fos_mock.assert_called_once_with(
         name=_TEST_BIGTABLE_FOS1_PATH, retry=base._DEFAULT_RETRY
@@ -439,7 +439,7 @@ def test_list(list_fos_mock):
 def test_delete(force, delete_fos_mock, get_fos_mock, fos_logger_mock, sync=True):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
     fos.delete(force=force, sync=sync)
 
     if not sync:
@@ -467,7 +467,7 @@ def test_delete(force, delete_fos_mock, get_fos_mock, fos_logger_mock, sync=True
 
 def test_create_fv_none_source_raises_error(get_fos_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     with pytest.raises(
         ValueError,
@@ -478,7 +478,7 @@ def test_create_fv_none_source_raises_error(get_fos_mock):
 
 def test_create_fv_wrong_object_type_raises_error(get_fos_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     with pytest.raises(
         ValueError,
@@ -492,7 +492,7 @@ def test_create_fv_wrong_object_type_raises_error(get_fos_mock):
 
 def test_create_bq_fv_bad_uri_raises_error(get_fos_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     with pytest.raises(
         ValueError,
@@ -509,7 +509,7 @@ def test_create_bq_fv_bad_entity_id_columns_raises_error(
     entity_id_columns, get_fos_mock
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     with pytest.raises(
         ValueError,
@@ -526,7 +526,7 @@ def test_create_bq_fv_bad_entity_id_columns_raises_error(
 )
 def test_create_fr_fv_invalid_feature_name_raises_error(features, get_fos_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     with pytest.raises(
         ValueError,
@@ -551,7 +551,7 @@ def test_create_bq_fv(
     fos_logger_mock,
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     fv = fos.create_feature_view(
         _TEST_FV1_ID,
@@ -613,7 +613,7 @@ def test_create_embedding_fv(
     get_optimized_embedding_fv_mock,
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_ESF_OPTIMIZED_FOS_ID)
+    fos = FeatureOnlineStore(name=_TEST_ESF_OPTIMIZED_FOS_ID)
 
     embedding_fv = fos.create_feature_view(
         _TEST_OPTIMIZED_EMBEDDING_FV_ID,
@@ -639,7 +639,7 @@ def test_create_embedding_fv(
 
 def test_create_rag_fv_bad_uri_raises_error(get_fos_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     with pytest.raises(
         ValueError,
@@ -662,7 +662,7 @@ def test_create_rag_fv(
     fos_logger_mock,
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     rag_fv = fos.create_feature_view(
         _TEST_FV3_ID,
@@ -729,7 +729,7 @@ def test_create_registry_fv(
     fos_logger_mock,
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
 
     registry_fv = fos.create_feature_view(
         _TEST_FV4_ID,
@@ -807,7 +807,7 @@ def test_list_feature_views(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fos = FeatureOnlineStore(_TEST_BIGTABLE_FOS1_ID)
+    fos = FeatureOnlineStore(name=_TEST_BIGTABLE_FOS1_ID)
     feature_views = fos.list_feature_views()
 
     list_fv_mock.assert_called_once_with(request={"parent": _TEST_BIGTABLE_FOS1_PATH})

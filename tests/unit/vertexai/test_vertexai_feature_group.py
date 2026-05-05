@@ -252,7 +252,7 @@ def fg_eq(
 def test_init(feature_group_name, get_fg_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fg = FeatureGroup(feature_group_name)
+    fg = FeatureGroup(name=feature_group_name)
 
     get_fg_mock.assert_called_once_with(
         name=_TEST_FG1_PATH,
@@ -415,7 +415,7 @@ def test_list(list_fg_mock):
 def test_delete(delete_fg_mock, get_fg_mock, fg_logger_mock, force, sync):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     fg.delete(force=force, sync=sync)
 
     if not sync:
@@ -444,7 +444,7 @@ def test_delete(delete_fg_mock, get_fg_mock, fg_logger_mock, force, sync):
 def test_get_feature(get_fg_mock, get_feature_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     feature = fg.get_feature(_TEST_FG1_F1_ID)
 
     get_feature_mock.assert_called_once_with(
@@ -469,7 +469,7 @@ def test_get_feature_with_latest_stats_count(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     feature = fg.get_feature(_TEST_FG1_F1_ID, latest_stats_count=1)
 
     get_feature_with_stats_and_anomalies_mock.assert_called_once_with(
@@ -503,7 +503,7 @@ def test_get_feature_credentials_set_in_init(mock_base_instantiate_client):
     mock_base_instantiate_client.return_value.get_feature_group.return_value = _TEST_FG1
     mock_base_instantiate_client.return_value.get_feature.return_value = _TEST_FG1_F1
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     mock_base_instantiate_client.assert_called_with(
         location=_TEST_LOCATION,
         credentials=credentials,
@@ -538,7 +538,7 @@ def test_get_feature_from_feature_group_with_explicit_credentials(
     mock_base_instantiate_client.return_value.get_feature.return_value = _TEST_FG1_F1
 
     credentials = mock.MagicMock(spec=auth_credentials.Credentials)
-    fg = FeatureGroup(_TEST_FG1_ID, credentials=credentials)
+    fg = FeatureGroup(name=_TEST_FG1_ID, credentials=credentials)
     mock_base_instantiate_client.assert_called_with(
         location=_TEST_LOCATION,
         credentials=credentials,
@@ -576,7 +576,7 @@ def test_get_feature_from_feature_group_with_explicit_credentials_overrides_init
     mock_base_instantiate_client.return_value.get_feature.return_value = _TEST_FG1_F1
 
     credentials = mock.MagicMock(spec=auth_credentials.Credentials)
-    fg = FeatureGroup(_TEST_FG1_ID, credentials=credentials)
+    fg = FeatureGroup(name=_TEST_FG1_ID, credentials=credentials)
     mock_base_instantiate_client.assert_called_with(
         location=_TEST_LOCATION,
         credentials=credentials,
@@ -608,7 +608,7 @@ def test_get_feature_with_explicit_credentials(mock_base_instantiate_client):
     mock_base_instantiate_client.return_value.get_feature_group.return_value = _TEST_FG1
     mock_base_instantiate_client.return_value.get_feature.return_value = _TEST_FG1_F1
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     mock_base_instantiate_client.assert_called_with(
         location=_TEST_LOCATION,
         credentials=mock.ANY,
@@ -646,7 +646,7 @@ def test_get_feature_with_explicit_credentials_overrides_init_credentials(
     mock_base_instantiate_client.return_value.get_feature_group.return_value = _TEST_FG1
     mock_base_instantiate_client.return_value.get_feature.return_value = _TEST_FG1_F1
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     mock_base_instantiate_client.assert_called_with(
         location=_TEST_LOCATION,
         credentials=init_credentials,
@@ -682,7 +682,7 @@ def test_get_feature_with_explicit_credentials_overrides_feature_group_credentia
     mock_base_instantiate_client.return_value.get_feature.return_value = _TEST_FG1_F1
 
     feature_group_credentials = mock.MagicMock(spec=auth_credentials.Credentials)
-    fg = FeatureGroup(_TEST_FG1_ID, credentials=feature_group_credentials)
+    fg = FeatureGroup(name=_TEST_FG1_ID, credentials=feature_group_credentials)
     mock_base_instantiate_client.assert_called_with(
         location=_TEST_LOCATION,
         credentials=feature_group_credentials,
@@ -721,7 +721,7 @@ def test_get_feature_with_explicit_credentials_overrides_init_and_feature_group_
     mock_base_instantiate_client.return_value.get_feature.return_value = _TEST_FG1_F1
 
     feature_group_credentials = mock.MagicMock(spec=auth_credentials.Credentials)
-    fg = FeatureGroup(_TEST_FG1_ID, credentials=feature_group_credentials)
+    fg = FeatureGroup(name=_TEST_FG1_ID, credentials=feature_group_credentials)
     mock_base_instantiate_client.assert_called_with(
         location=_TEST_LOCATION,
         credentials=feature_group_credentials,
@@ -760,7 +760,7 @@ def test_create_feature(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     feature = fg.create_feature(
         _TEST_FG1_F1_ID,
         description=_TEST_FG1_F1_DESCRIPTION,
@@ -826,7 +826,7 @@ def test_create_feature_with_version_feature_column(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     feature = fg.create_feature(
         _TEST_FG1_F2_ID,
         version_column_name=_TEST_FG1_F2_VERSION_COLUMN_NAME,
@@ -886,7 +886,7 @@ def test_create_feature_with_version_feature_column(
 def test_list_features(get_fg_mock, list_features_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    features = FeatureGroup(_TEST_FG1_ID).list_features()
+    features = FeatureGroup(name=_TEST_FG1_ID).list_features()
 
     list_features_mock.assert_called_once_with(request={"parent": _TEST_FG1_PATH})
     assert len(features) == len(_TEST_FG1_FEATURE_LIST)
@@ -923,7 +923,7 @@ def test_create_feature_monitor(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fg = FeatureGroup(_TEST_FG1_ID)
+    fg = FeatureGroup(name=_TEST_FG1_ID)
     feature_monitor = fg.create_feature_monitor(
         _TEST_FG1_FM1_ID,
         description=_TEST_FG1_FM1_DESCRIPTION,
@@ -997,7 +997,7 @@ def test_list_feature_monitors(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    feature_monitors = FeatureGroup(_TEST_FG1_ID).list_feature_monitors()
+    feature_monitors = FeatureGroup(name=_TEST_FG1_ID).list_feature_monitors()
 
     list_feature_monitors_mock.assert_called_once_with(
         request={"parent": _TEST_FG1_PATH}

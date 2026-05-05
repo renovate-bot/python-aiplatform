@@ -620,7 +620,7 @@ class TestModelMonitor:
             location=_TEST_LOCATION,
             credentials=_TEST_CREDENTIALS,
         )
-        ModelMonitor(_TEST_MODEL_MONITOR_ID)
+        ModelMonitor(model_monitor_name=_TEST_MODEL_MONITOR_ID)
         create_client_mock.assert_any_call(
             client_class=utils.ModelMonitoringClientWithOverride,
             credentials=initializer.global_config.credentials,
@@ -634,7 +634,9 @@ class TestModelMonitor:
             location=_TEST_LOCATION,
             credentials=_TEST_CREDENTIALS,
         )
-        ModelMonitor(_TEST_MODEL_MONITOR_ID, location=_TEST_LOCATION_2)
+        ModelMonitor(
+            model_monitor_name=_TEST_MODEL_MONITOR_ID, location=_TEST_LOCATION_2
+        )
         create_client_mock.assert_any_call(
             client_class=utils.ModelMonitoringClientWithOverride,
             credentials=initializer.global_config.credentials,
@@ -646,7 +648,7 @@ class TestModelMonitor:
         self, create_client_mock
     ):
         creds = auth_credentials.AnonymousCredentials()
-        ModelMonitor(_TEST_MODEL_MONITOR_ID, credentials=creds)
+        ModelMonitor(model_monitor_name=_TEST_MODEL_MONITOR_ID, credentials=creds)
         create_client_mock.assert_any_call(
             client_class=utils.ModelMonitoringClientWithOverride,
             credentials=creds,

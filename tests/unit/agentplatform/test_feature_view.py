@@ -218,13 +218,13 @@ def test_init_with_fv_id_and_no_fos_id_raises_error(get_fv_mock):
             + " feature_online_store_id."
         ),
     ):
-        FeatureView(_TEST_FV1_ID)
+        FeatureView(name=_TEST_FV1_ID)
 
 
 def test_init_with_fv_id(get_fv_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fv = FeatureView(_TEST_FV1_ID, feature_online_store_id=_TEST_BIGTABLE_FOS1_ID)
+    fv = FeatureView(name=_TEST_FV1_ID, feature_online_store_id=_TEST_BIGTABLE_FOS1_ID)
 
     get_fv_mock.assert_called_once_with(
         name=_TEST_FV1_PATH,
@@ -244,7 +244,7 @@ def test_init_with_fv_id(get_fv_mock):
 def test_init_with_fv_path(get_fv_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fv = FeatureView(_TEST_FV1_PATH)
+    fv = FeatureView(name=_TEST_FV1_PATH)
 
     get_fv_mock.assert_called_once_with(
         name=_TEST_FV1_PATH,
@@ -332,7 +332,7 @@ def test_delete(delete_fv_mock, fv_logger_mock, get_fos_mock, get_fv_mock, sync=
 def test_get_sync(get_fv_mock, get_fv_sync_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fv_sync = FeatureView(_TEST_FV1_PATH).get_sync(_TEST_FV_SYNC1_ID)
+    fv_sync = FeatureView(name=_TEST_FV1_PATH).get_sync(_TEST_FV_SYNC1_ID)
 
     get_fv_mock.assert_called_once_with(
         name=_TEST_FV1_PATH,
@@ -356,7 +356,7 @@ def test_get_sync(get_fv_mock, get_fv_sync_mock):
 def test_list_syncs(get_fv_mock, list_fv_syncs_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fv_syncs = FeatureView(_TEST_FV1_PATH).list_syncs()
+    fv_syncs = FeatureView(name=_TEST_FV1_PATH).list_syncs()
 
     get_fv_mock.assert_called_once_with(
         name=_TEST_FV1_PATH,
@@ -386,7 +386,7 @@ def test_list_syncs(get_fv_mock, list_fv_syncs_mock):
 def test_on_demand_sync(get_fv_mock, get_fv_sync_mock, sync_fv_sync_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    fv_sync = FeatureView(_TEST_FV1_PATH).sync()
+    fv_sync = FeatureView(name=_TEST_FV1_PATH).sync()
 
     get_fv_mock.assert_called_once_with(
         name=_TEST_FV1_PATH,
@@ -416,12 +416,12 @@ def test_fetch_feature_values_bigtable(
     get_fos_mock, get_fv_mock, fetch_feature_values_mock, fv_logger_mock, output_type
 ):
     if output_type == "dict":
-        fv_dict = FeatureView(_TEST_FV1_PATH).read(key=["key1"]).to_dict()
+        fv_dict = FeatureView(name=_TEST_FV1_PATH).read(key=["key1"]).to_dict()
         assert fv_dict == {
             "features": [{"name": "key1", "value": {"string_value": "value1"}}]
         }
     elif output_type == "proto":
-        fv_proto = FeatureView(_TEST_FV1_PATH).read(key=["key1"]).to_proto()
+        fv_proto = FeatureView(name=_TEST_FV1_PATH).read(key=["key1"]).to_proto()
         assert fv_proto == _TEST_FV_FETCH1
 
     fv_logger_mock.assert_has_calls(
@@ -440,12 +440,16 @@ def test_fetch_feature_values_optimized(
     output_type,
 ):
     if output_type == "dict":
-        fv_dict = FeatureView(_TEST_OPTIMIZED_FV1_PATH).read(key=["key1"]).to_dict()
+        fv_dict = (
+            FeatureView(name=_TEST_OPTIMIZED_FV1_PATH).read(key=["key1"]).to_dict()
+        )
         assert fv_dict == {
             "features": [{"name": "key1", "value": {"string_value": "value1"}}]
         }
     elif output_type == "proto":
-        fv_proto = FeatureView(_TEST_OPTIMIZED_FV1_PATH).read(key=["key1"]).to_proto()
+        fv_proto = (
+            FeatureView(name=_TEST_OPTIMIZED_FV1_PATH).read(key=["key1"]).to_proto()
+        )
         assert fv_proto == _TEST_FV_FETCH1
 
     fv_logger_mock.assert_has_calls(
@@ -471,7 +475,7 @@ def test_fetch_feature_values_optimized_no_endpoint(
             "to complete."
         ),
     ):
-        FeatureView(_TEST_OPTIMIZED_FV2_PATH).read(key=["key1"]).to_dict()
+        FeatureView(name=_TEST_OPTIMIZED_FV2_PATH).read(key=["key1"]).to_dict()
 
 
 def test_ffv_optimized_psc_with_no_connection_options_raises_error(
@@ -479,7 +483,7 @@ def test_ffv_optimized_psc_with_no_connection_options_raises_error(
     get_optimized_fv_mock,
 ):
     with pytest.raises(ValueError) as excinfo:
-        FeatureView(_TEST_OPTIMIZED_FV1_PATH).read(key=["key1"])
+        FeatureView(name=_TEST_OPTIMIZED_FV1_PATH).read(key=["key1"])
 
     assert str(excinfo.value) == (
         "Use `connection_options` to specify an IP address. Required for optimized online store with private service connect."
@@ -491,7 +495,7 @@ def test_ffv_optimized_psc_with_no_connection_transport_raises_error(
     get_optimized_fv_mock,
 ):
     with pytest.raises(ValueError) as excinfo:
-        FeatureView(_TEST_OPTIMIZED_FV1_PATH).read(
+        FeatureView(name=_TEST_OPTIMIZED_FV1_PATH).read(
             key=["key1"],
             connection_options=fs_utils.ConnectionOptions(
                 host="1.2.3.4", transport=None
@@ -508,7 +512,7 @@ def test_ffv_optimized_psc_with_bad_connection_transport_raises_error(
     get_optimized_fv_mock,
 ):
     with pytest.raises(ValueError) as excinfo:
-        FeatureView(_TEST_OPTIMIZED_FV1_PATH).read(
+        FeatureView(name=_TEST_OPTIMIZED_FV1_PATH).read(
             key=["key1"],
             connection_options=fs_utils.ConnectionOptions(
                 host="1.2.3.4", transport="hi"
@@ -529,7 +533,7 @@ def test_ffv_optimized_psc(
     fetch_feature_values_mock,
     output_type,
 ):
-    rsp = FeatureView(_TEST_OPTIMIZED_FV1_PATH).read(
+    rsp = FeatureView(name=_TEST_OPTIMIZED_FV1_PATH).read(
         key=["key1"],
         connection_options=fs_utils.ConnectionOptions(
             host="1.2.3.4",
@@ -694,7 +698,7 @@ def test_ffv_optimized_psc_reuse_client_for_same_connection_options_in_same_ffv(
     grpc_insecure_channel_mock,
     fetch_feature_values_mock,
 ):
-    fv = FeatureView(_TEST_OPTIMIZED_FV1_PATH)
+    fv = FeatureView(name=_TEST_OPTIMIZED_FV1_PATH)
     fv.read(
         key=["key1"],
         connection_options=fs_utils.ConnectionOptions(
@@ -732,7 +736,7 @@ def test_ffv_optimized_psc_different_client_for_different_connection_options(
     grpc_chan2 = mock.MagicMock(spec=grpc.Channel)
     grpc_insecure_channel_mock.side_effect = [grpc_chan1, grpc_chan2]
 
-    fv = FeatureView(_TEST_OPTIMIZED_FV1_PATH)
+    fv = FeatureView(name=_TEST_OPTIMIZED_FV1_PATH)
     fv.read(
         key=["key1"],
         connection_options=fs_utils.ConnectionOptions(
@@ -763,7 +767,7 @@ def test_ffv_optimized_psc_bad_gapic_client_raises_error(
     get_psc_optimized_fos_mock, get_optimized_fv_mock, utils_client_with_override_mock
 ):
     with pytest.raises(ValueError) as excinfo:
-        FeatureView(_TEST_OPTIMIZED_FV1_PATH).read(
+        FeatureView(name=_TEST_OPTIMIZED_FV1_PATH).read(
             key=["key1"],
             connection_options=fs_utils.ConnectionOptions(
                 host="1.1.1.1",
@@ -787,7 +791,7 @@ def test_search_nearest_entities(
     if output_type == "dict":
         fv_dict = (
             # Test with entity_id input.
-            FeatureView(_TEST_EMBEDDING_FV1_PATH)
+            FeatureView(name=_TEST_EMBEDDING_FV1_PATH)
             .search(
                 entity_id="key1",
                 neighbor_count=2,
@@ -805,7 +809,7 @@ def test_search_nearest_entities(
     elif output_type == "proto":
         fv_proto = (
             # Test with embedding_value input.
-            FeatureView(_TEST_EMBEDDING_FV1_PATH)
+            FeatureView(name=_TEST_EMBEDDING_FV1_PATH)
             .search(embedding_value=[0.1, 0.2, 0.3])
             .to_proto()
         )
@@ -828,7 +832,7 @@ def test_search_nearest_entities_without_entity_id_or_embedding(
     fv_logger_mock,
 ):
     try:
-        FeatureView(_TEST_EMBEDDING_FV1_PATH).search().to_proto()
+        FeatureView(name=_TEST_EMBEDDING_FV1_PATH).search().to_proto()
         assert not search_nearest_entities_mock.called
     except ValueError as e:
         error_msg = (
@@ -844,7 +848,7 @@ def test_search_nearest_entities_no_endpoint(
 ):
     """Tests that the public endpoint is not created for the optimized online store."""
     try:
-        FeatureView(_TEST_OPTIMIZED_FV2_PATH).search(entity_id="key1").to_dict()
+        FeatureView(name=_TEST_OPTIMIZED_FV2_PATH).search(entity_id="key1").to_dict()
         assert not fetch_feature_values_mock.called
     except fs_utils.PublicEndpointNotFoundError as e:
         assert isinstance(e, fs_utils.PublicEndpointNotFoundError)

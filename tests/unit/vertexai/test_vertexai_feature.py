@@ -120,7 +120,7 @@ def test_init_with_feature_id_and_no_fg_id_raises_error(get_feature_mock):
             + " feature_group_id."
         ),
     ):
-        Feature(_TEST_FG1_F1_ID)
+        Feature(name=_TEST_FG1_F1_ID)
 
 
 def test_init_with_feature_path_and_fg_id_raises_error(get_feature_mock):
@@ -132,13 +132,13 @@ def test_init_with_feature_path_and_fg_id_raises_error(get_feature_mock):
             "Since feature 'projects/test-project/locations/us-central1/featureGroups/my_fg1/features/my_fg1_f1' is provided as a path, feature_group_id should not be specified."
         ),
     ):
-        Feature(_TEST_FG1_F1_PATH, feature_group_id=_TEST_FG1_ID)
+        Feature(name=_TEST_FG1_F1_PATH, feature_group_id=_TEST_FG1_ID)
 
 
 def test_init_with_feature_id(get_feature_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    feature = Feature(_TEST_FG1_F1_ID, feature_group_id=_TEST_FG1_ID)
+    feature = Feature(name=_TEST_FG1_F1_ID, feature_group_id=_TEST_FG1_ID)
 
     get_feature_mock.assert_called_once_with(
         name=_TEST_FG1_F1_PATH,
@@ -162,7 +162,7 @@ def test_init_with_feature_id_for_explicit_version_column(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    feature = Feature(_TEST_FG1_F2_ID, feature_group_id=_TEST_FG1_ID)
+    feature = Feature(name=_TEST_FG1_F2_ID, feature_group_id=_TEST_FG1_ID)
 
     get_feature_with_version_column_mock.assert_called_once_with(
         name=_TEST_FG1_F2_PATH,
@@ -185,7 +185,7 @@ def test_init_with_feature_id_for_explicit_version_column(
 def test_init_with_feature_path(get_feature_mock):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    feature = Feature(_TEST_FG1_F1_PATH)
+    feature = Feature(name=_TEST_FG1_F1_PATH)
 
     get_feature_mock.assert_called_once_with(
         name=_TEST_FG1_F1_PATH,
@@ -209,7 +209,7 @@ def test_init_with_feature_path_for_explicit_version_column(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    feature = Feature(_TEST_FG1_F2_PATH)
+    feature = Feature(name=_TEST_FG1_F2_PATH)
 
     get_feature_with_version_column_mock.assert_called_once_with(
         name=_TEST_FG1_F2_PATH,
@@ -262,7 +262,7 @@ def test_delete_feature(
 ):
     aiplatform.init(project=_TEST_PROJECT, location=_TEST_LOCATION)
 
-    feature = FeatureGroup(_TEST_FG1_ID).get_feature(_TEST_FG1_F1_ID)
+    feature = FeatureGroup(name=_TEST_FG1_ID).get_feature(_TEST_FG1_F1_ID)
     feature.delete(sync=sync)
 
     if not sync:

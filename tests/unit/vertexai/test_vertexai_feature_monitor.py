@@ -158,7 +158,7 @@ def test_init_with_feature_monitor_id_and_no_fg_id_raises_error():
             " specify feature_group_id."
         ),
     ):
-        FeatureMonitor(_TEST_FG1_FM1_ID)
+        FeatureMonitor(name=_TEST_FG1_FM1_ID)
 
 
 def test_init_with_feature_monitor_path_and_fg_id_raises_error():
@@ -176,7 +176,7 @@ def test_init_with_feature_monitor_path_and_fg_id_raises_error():
         ),
     ):
         FeatureMonitor(
-            _TEST_FG1_FM1_PATH,
+            name=_TEST_FG1_FM1_PATH,
             feature_group_id=_TEST_FG1_ID,
         )
 
@@ -216,7 +216,7 @@ def test_init_with_feature_monitor_path(get_feature_monitor_mock):
         location=_TEST_LOCATION,
     )
 
-    feature_monitor = FeatureMonitor(_TEST_FG1_FM1_PATH)
+    feature_monitor = FeatureMonitor(name=_TEST_FG1_FM1_PATH)
 
     get_feature_monitor_mock.assert_called_once_with(
         name=_TEST_FG1_FM1_PATH,
@@ -242,7 +242,7 @@ def test_init_with_feature_monitor_job_path(get_feature_monitor_job_mock):
         location=_TEST_LOCATION,
     )
 
-    feature_monitor_job = FeatureMonitor.FeatureMonitorJob(_TEST_FG1_FMJ1_PATH)
+    feature_monitor_job = FeatureMonitor.FeatureMonitorJob(name=_TEST_FG1_FMJ1_PATH)
 
     get_feature_monitor_job_mock.assert_called_once_with(
         name=_TEST_FG1_FMJ1_PATH,
@@ -274,7 +274,7 @@ def test_create_feature_monitor_job(
     )
 
     fm = FeatureMonitor(
-        _TEST_FG1_FM1_ID,
+        name=_TEST_FG1_FM1_ID,
         feature_group_id=_TEST_FG1_ID,
     )
     feature_monitor_job = fm.create_feature_monitor_job(
@@ -314,7 +314,7 @@ def test_get_feature_monitor_job(
     )
 
     fm = FeatureMonitor(
-        _TEST_FG1_FM1_ID,
+        name=_TEST_FG1_FM1_ID,
         feature_group_id=_TEST_FG1_ID,
     )
     feature_monitor_job = fm.get_feature_monitor_job(_TEST_FG1_FMJ1_ID)
@@ -344,7 +344,7 @@ def test_list_feature_monitors_jobs(
     )
 
     feature_monitor_jobs = FeatureMonitor(
-        _TEST_FG1_FM1_ID,
+        name=_TEST_FG1_FM1_ID,
         feature_group_id=_TEST_FG1_ID,
     ).list_feature_monitor_jobs()
 
