@@ -208,7 +208,12 @@ class TestLanggraphAgent:
         mocks.attach_mock(mock=agent._runnable, attribute="invoke")
         agent.query(input="test query")
         mocks.assert_has_calls(
-            [mock.call.invoke.invoke(input={"input": "test query"}, config=None)]
+            [
+                mock.call.invoke.invoke(
+                    input={"input": "test query", "messages": [("user", "test query")]},
+                    config=None,
+                )
+            ]
         )
 
     def test_stream_query(self, langchain_dump_mock):
@@ -217,7 +222,10 @@ class TestLanggraphAgent:
         agent._runnable.stream.return_value = []
         list(agent.stream_query(input="test stream query"))
         agent._runnable.stream.assert_called_once_with(
-            input={"input": "test stream query"},
+            input={
+                "input": "test stream query",
+                "messages": [("user", "test stream query")],
+            },
             config=None,
         )
 
