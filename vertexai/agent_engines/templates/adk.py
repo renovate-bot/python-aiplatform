@@ -93,7 +93,7 @@ if TYPE_CHECKING:
         SynchronousMultiSpanProcessor = Any
 
 
-_DEFAULT_APP_NAME = "default-app-name"
+_DEFAULT_APP_NAME = "default_app_name"
 _DEFAULT_USER_ID = "default-user-id"
 _TELEMETRY_API_DISABLED_WARNING = (
     "Tracing integration for Agent Engine has migrated to a new API.\n"
