@@ -90,6 +90,7 @@ from .common import _GetMultimodalDatasetParameters
 from .common import _GetSandboxEnvironmentSnapshotRequestParameters
 from .common import _GetSandboxEnvironmentTemplateOperationParameters
 from .common import _GetSandboxEnvironmentTemplateRequestParameters
+from .common import _GetSkillRequestParameters
 from .common import _IngestEventsRequestParameters
 from .common import _ListAgentEngineMemoryRequestParameters
 from .common import _ListAgentEngineMemoryRevisionsRequestParameters
@@ -608,6 +609,9 @@ from .common import GetSandboxEnvironmentSnapshotConfigOrDict
 from .common import GetSandboxEnvironmentTemplateConfig
 from .common import GetSandboxEnvironmentTemplateConfigDict
 from .common import GetSandboxEnvironmentTemplateConfigOrDict
+from .common import GetSkillConfig
+from .common import GetSkillConfigDict
+from .common import GetSkillConfigOrDict
 from .common import IdentityType
 from .common import Importance
 from .common import IngestEventsConfig
@@ -1243,6 +1247,10 @@ from .common import SessionEvent
 from .common import SessionEventDict
 from .common import SessionEventOrDict
 from .common import SessionOrDict
+from .common import Skill
+from .common import SkillDict
+from .common import SkillOrDict
+from .common import SkillState
 from .common import State
 from .common import Strategy
 from .common import StructuredMemoryConfig
@@ -2478,6 +2486,12 @@ __all__ = [
     "UpdatePromptConfig",
     "UpdatePromptConfigDict",
     "UpdatePromptConfigOrDict",
+    "GetSkillConfig",
+    "GetSkillConfigDict",
+    "GetSkillConfigOrDict",
+    "Skill",
+    "SkillDict",
+    "SkillOrDict",
     "PromptOptimizerConfig",
     "PromptOptimizerConfigDict",
     "PromptOptimizerConfigOrDict",
@@ -2591,6 +2605,7 @@ __all__ = [
     "OptimizeTarget",
     "MemoryMetadataMergeStrategy",
     "GenerateMemoriesResponseGeneratedMemoryAction",
+    "SkillState",
     "PromptOptimizerMethod",
     "OptimizationMethod",
     "PromptData",
@@ -2714,6 +2729,7 @@ __all__ = [
     "_CustomJobParameters",
     "_GetCustomJobParameters",
     "_OptimizeRequestParameters",
+    "_GetSkillRequestParameters",
     "evals",
     "agent_engines",
     "prompts",

@@ -446,6 +446,21 @@ class GenerateMemoriesResponseGeneratedMemoryAction(_common.CaseInSensitiveEnum)
     """The memory was deleted."""
 
 
+class SkillState(_common.CaseInSensitiveEnum):
+    """State of the Skill."""
+
+    STATE_UNSPECIFIED = "STATE_UNSPECIFIED"
+    """The state of the Skill is unspecified."""
+    ACTIVE = "ACTIVE"
+    """The Skill is active."""
+    CREATING = "CREATING"
+    """The Skill is being created."""
+    FAILED = "FAILED"
+    """The Skill was created, but failed to process."""
+    DELETING = "DELETING"
+    """The Skill is being deleted."""
+
+
 class PromptOptimizerMethod(_common.CaseInSensitiveEnum):
     """The method for data driven prompt optimization."""
 
@@ -17793,6 +17808,129 @@ class _UpdateDatasetParametersDict(TypedDict, total=False):
 _UpdateDatasetParametersOrDict = Union[
     _UpdateDatasetParameters, _UpdateDatasetParametersDict
 ]
+
+
+class GetSkillConfig(_common.BaseModel):
+    """Config for getting a skill."""
+
+    http_options: Optional[genai_types.HttpOptions] = Field(
+        default=None, description="""Used to override HTTP request options."""
+    )
+
+
+class GetSkillConfigDict(TypedDict, total=False):
+    """Config for getting a skill."""
+
+    http_options: Optional[genai_types.HttpOptionsDict]
+    """Used to override HTTP request options."""
+
+
+GetSkillConfigOrDict = Union[GetSkillConfig, GetSkillConfigDict]
+
+
+class _GetSkillRequestParameters(_common.BaseModel):
+    """Parameters for GetSkillRequest."""
+
+    name: Optional[str] = Field(
+        default=None,
+        description="""The resource name of the Skill to retrieve. Format: projects/{project}/locations/{location}/skills/{skill}""",
+    )
+    config: Optional[GetSkillConfig] = Field(default=None, description="""""")
+
+
+class _GetSkillRequestParametersDict(TypedDict, total=False):
+    """Parameters for GetSkillRequest."""
+
+    name: Optional[str]
+    """The resource name of the Skill to retrieve. Format: projects/{project}/locations/{location}/skills/{skill}"""
+
+    config: Optional[GetSkillConfigDict]
+    """"""
+
+
+_GetSkillRequestParametersOrDict = Union[
+    _GetSkillRequestParameters, _GetSkillRequestParametersDict
+]
+
+
+class Skill(_common.BaseModel):
+    """Represents a Skill resource.
+
+    Patches the type from the discovery document.
+    """
+
+    name: Optional[str] = Field(
+        default=None,
+        description="""Identifier. The resource name of the Skill. Format: `projects/{project}/locations/{location}/skills/{skill}`""",
+    )
+    create_time: Optional[datetime.datetime] = Field(
+        default=None,
+        description="""Output only. Timestamp when this Skill was created.""",
+    )
+    update_time: Optional[datetime.datetime] = Field(
+        default=None,
+        description="""Output only. Timestamp when this Skill was most recently updated.""",
+    )
+    display_name: Optional[str] = Field(
+        default=None,
+        description="""Required. Provides the display name of the Skill. This should align with `name` in the `SKILL.md` file.""",
+    )
+    description: Optional[str] = Field(
+        default=None,
+        description="""Required. Describes the Skill. Should describe both what the skill does and when to use it. Should include specific keywords that help agents identify relevant tasks. This should align with `description` in the `SKILL.md` file.""",
+    )
+    license: Optional[str] = Field(
+        default=None,
+        description="""Optional. Specifies the license of the Skill. This should be an SPDX license identifier (e.g., "MIT", "Apache-2.0"). See https://spdx.org/licenses/. This should align with `license` in the `SKILL.md` file.""",
+    )
+    compatibility: Optional[str] = Field(
+        default=None,
+        description="""Optional. Specifies the compatibility of the Skill. Indicates environment requirements (intended product, system packages, network access, etc.). This should align with `compatibility` in the `SKILL.md` file.""",
+    )
+    zipped_filesystem: Optional[str] = Field(
+        default=None,
+        description="""Required. Provides the zipped filesystem of the Skill. This should contain the `SKILL.md` file at the root of the zip and optional directories for scripts, references, and assets. Directory should align with the directory structure specified at https://agentskills.io/specification#directory-structure.""",
+    )
+    state: Optional[SkillState] = Field(
+        default=None, description="""Output only. The state of the Skill."""
+    )
+
+
+class SkillDict(TypedDict, total=False):
+    """Represents a Skill resource.
+
+    Patches the type from the discovery document.
+    """
+
+    name: Optional[str]
+    """Identifier. The resource name of the Skill. Format: `projects/{project}/locations/{location}/skills/{skill}`"""
+
+    create_time: Optional[datetime.datetime]
+    """Output only. Timestamp when this Skill was created."""
+
+    update_time: Optional[datetime.datetime]
+    """Output only. Timestamp when this Skill was most recently updated."""
+
+    display_name: Optional[str]
+    """Required. Provides the display name of the Skill. This should align with `name` in the `SKILL.md` file."""
+
+    description: Optional[str]
+    """Required. Describes the Skill. Should describe both what the skill does and when to use it. Should include specific keywords that help agents identify relevant tasks. This should align with `description` in the `SKILL.md` file."""
+
+    license: Optional[str]
+    """Optional. Specifies the license of the Skill. This should be an SPDX license identifier (e.g., "MIT", "Apache-2.0"). See https://spdx.org/licenses/. This should align with `license` in the `SKILL.md` file."""
+
+    compatibility: Optional[str]
+    """Optional. Specifies the compatibility of the Skill. Indicates environment requirements (intended product, system packages, network access, etc.). This should align with `compatibility` in the `SKILL.md` file."""
+
+    zipped_filesystem: Optional[str]
+    """Required. Provides the zipped filesystem of the Skill. This should contain the `SKILL.md` file at the root of the zip and optional directories for scripts, references, and assets. Directory should align with the directory structure specified at https://agentskills.io/specification#directory-structure."""
+
+    state: Optional[SkillState]
+    """Output only. The state of the Skill."""
+
+
+SkillOrDict = Union[Skill, SkillDict]
 
 
 class PromptOptimizerConfig(_common.BaseModel):
