@@ -228,7 +228,7 @@ We can also call the `launch_optimization_job` method asynchronously.
 Prompt Management
 ^^^^^^^^^^^^^^^^^
 
-First define your prompt as a dictionary or types.Prompt object. Then call create_prompt.
+First define your prompt as a dictionary or types.Prompt object. Then call create_version.
 
 .. code-block:: Python
 
@@ -243,7 +243,7 @@ First define your prompt as a dictionary or types.Prompt object. Then call creat
         },
     }
 
-    prompt_resource = client.prompts.create(
+    prompt_resource = client.prompts.create_version(
         prompt=prompt,
     )
 
