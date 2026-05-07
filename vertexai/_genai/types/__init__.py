@@ -115,6 +115,7 @@ from .common import _QueryAgentEngineRuntimeRevisionRequestParameters
 from .common import _RestoreVersionRequestParameters
 from .common import _RetrieveAgentEngineMemoriesRequestParameters
 from .common import _RetrieveMemoryProfilesRequestParameters
+from .common import _RetrieveSkillsRequestParameters
 from .common import _RollbackAgentEngineMemoryRequestParameters
 from .common import _RunQueryJobAgentEngineConfig
 from .common import _RunQueryJobAgentEngineConfigDict
@@ -1046,6 +1047,9 @@ from .common import RestoreVersionOperationOrDict
 from .common import RetrieveAgentEngineMemoriesConfig
 from .common import RetrieveAgentEngineMemoriesConfigDict
 from .common import RetrieveAgentEngineMemoriesConfigOrDict
+from .common import RetrievedSkill
+from .common import RetrievedSkillDict
+from .common import RetrievedSkillOrDict
 from .common import RetrieveMemoriesRequestSimilaritySearchParams
 from .common import RetrieveMemoriesRequestSimilaritySearchParamsDict
 from .common import RetrieveMemoriesRequestSimilaritySearchParamsOrDict
@@ -1064,6 +1068,12 @@ from .common import RetrieveMemoryProfilesConfigOrDict
 from .common import RetrieveProfilesResponse
 from .common import RetrieveProfilesResponseDict
 from .common import RetrieveProfilesResponseOrDict
+from .common import RetrieveSkillsConfig
+from .common import RetrieveSkillsConfigDict
+from .common import RetrieveSkillsConfigOrDict
+from .common import RetrieveSkillsResponse
+from .common import RetrieveSkillsResponseDict
+from .common import RetrieveSkillsResponseOrDict
 from .common import RollbackAgentEngineMemoryConfig
 from .common import RollbackAgentEngineMemoryConfigDict
 from .common import RollbackAgentEngineMemoryConfigOrDict
@@ -2492,6 +2502,15 @@ __all__ = [
     "Skill",
     "SkillDict",
     "SkillOrDict",
+    "RetrieveSkillsConfig",
+    "RetrieveSkillsConfigDict",
+    "RetrieveSkillsConfigOrDict",
+    "RetrievedSkill",
+    "RetrievedSkillDict",
+    "RetrievedSkillOrDict",
+    "RetrieveSkillsResponse",
+    "RetrieveSkillsResponseDict",
+    "RetrieveSkillsResponseOrDict",
     "PromptOptimizerConfig",
     "PromptOptimizerConfigDict",
     "PromptOptimizerConfigOrDict",
@@ -2730,6 +2749,7 @@ __all__ = [
     "_GetCustomJobParameters",
     "_OptimizeRequestParameters",
     "_GetSkillRequestParameters",
+    "_RetrieveSkillsRequestParameters",
     "evals",
     "agent_engines",
     "prompts",

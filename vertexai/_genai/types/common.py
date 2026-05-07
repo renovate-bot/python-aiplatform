@@ -17933,6 +17933,103 @@ class SkillDict(TypedDict, total=False):
 SkillOrDict = Union[Skill, SkillDict]
 
 
+class RetrieveSkillsConfig(_common.BaseModel):
+    """Config for retrieving skills."""
+
+    http_options: Optional[genai_types.HttpOptions] = Field(
+        default=None, description="""Used to override HTTP request options."""
+    )
+    top_k: Optional[int] = Field(
+        default=None,
+        description="""Optional. The maximum number of skills to return. The service may
+      return fewer than this value. If unspecified, at most 10 skills will be
+      returned. The maximum value is 100.
+      """,
+    )
+
+
+class RetrieveSkillsConfigDict(TypedDict, total=False):
+    """Config for retrieving skills."""
+
+    http_options: Optional[genai_types.HttpOptionsDict]
+    """Used to override HTTP request options."""
+
+    top_k: Optional[int]
+    """Optional. The maximum number of skills to return. The service may
+      return fewer than this value. If unspecified, at most 10 skills will be
+      returned. The maximum value is 100.
+      """
+
+
+RetrieveSkillsConfigOrDict = Union[RetrieveSkillsConfig, RetrieveSkillsConfigDict]
+
+
+class _RetrieveSkillsRequestParameters(_common.BaseModel):
+    """Parameters for retrieving skills."""
+
+    query: Optional[str] = Field(
+        default=None, description="""Required. The query to find matching skills."""
+    )
+    config: Optional[RetrieveSkillsConfig] = Field(default=None, description="""""")
+
+
+class _RetrieveSkillsRequestParametersDict(TypedDict, total=False):
+    """Parameters for retrieving skills."""
+
+    query: Optional[str]
+    """Required. The query to find matching skills."""
+
+    config: Optional[RetrieveSkillsConfigDict]
+    """"""
+
+
+_RetrieveSkillsRequestParametersOrDict = Union[
+    _RetrieveSkillsRequestParameters, _RetrieveSkillsRequestParametersDict
+]
+
+
+class RetrievedSkill(_common.BaseModel):
+    """A retrieved skill from semantic search."""
+
+    skill_name: Optional[str] = Field(
+        default=None, description="""The resource name of the skill."""
+    )
+    description: Optional[str] = Field(
+        default=None, description="""The description of the skill."""
+    )
+
+
+class RetrievedSkillDict(TypedDict, total=False):
+    """A retrieved skill from semantic search."""
+
+    skill_name: Optional[str]
+    """The resource name of the skill."""
+
+    description: Optional[str]
+    """The description of the skill."""
+
+
+RetrievedSkillOrDict = Union[RetrievedSkill, RetrievedSkillDict]
+
+
+class RetrieveSkillsResponse(_common.BaseModel):
+    """Response for retrieving skills."""
+
+    retrieved_skills: Optional[list[RetrievedSkill]] = Field(
+        default=None, description="""List of retrieved skills ranked by similarity."""
+    )
+
+
+class RetrieveSkillsResponseDict(TypedDict, total=False):
+    """Response for retrieving skills."""
+
+    retrieved_skills: Optional[list[RetrievedSkillDict]]
+    """List of retrieved skills ranked by similarity."""
+
+
+RetrieveSkillsResponseOrDict = Union[RetrieveSkillsResponse, RetrieveSkillsResponseDict]
+
+
 class PromptOptimizerConfig(_common.BaseModel):
     """VAPO Prompt Optimizer Config."""
 
