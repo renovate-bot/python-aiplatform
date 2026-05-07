@@ -18030,6 +18030,179 @@ class RetrieveSkillsResponseDict(TypedDict, total=False):
 RetrieveSkillsResponseOrDict = Union[RetrieveSkillsResponse, RetrieveSkillsResponseDict]
 
 
+class CreateSkillConfig(_common.BaseModel):
+    """Config for creating a skill."""
+
+    http_options: Optional[genai_types.HttpOptions] = Field(
+        default=None, description="""Used to override HTTP request options."""
+    )
+    wait_for_completion: Optional[bool] = Field(
+        default=True,
+        description="""Whether to wait for the long running operation to complete.""",
+    )
+    local_path: Optional[str] = Field(
+        default=None,
+        description="""Optional. The local path to the directory containing the Skill to
+      be zipped and uploaded.
+      """,
+    )
+    zipped_filesystem: Optional[Any] = Field(
+        default=None, description="""Optional. The zipped filesystem of the Skill."""
+    )
+    skill_id: Optional[str] = Field(
+        default=None,
+        description="""Optional. The ID to use for the Skill, which will become the final
+      component of the Skill's resource name.
+      """,
+    )
+
+
+class CreateSkillConfigDict(TypedDict, total=False):
+    """Config for creating a skill."""
+
+    http_options: Optional[genai_types.HttpOptionsDict]
+    """Used to override HTTP request options."""
+
+    wait_for_completion: Optional[bool]
+    """Whether to wait for the long running operation to complete."""
+
+    local_path: Optional[str]
+    """Optional. The local path to the directory containing the Skill to
+      be zipped and uploaded.
+      """
+
+    zipped_filesystem: Optional[Any]
+    """Optional. The zipped filesystem of the Skill."""
+
+    skill_id: Optional[str]
+    """Optional. The ID to use for the Skill, which will become the final
+      component of the Skill's resource name.
+      """
+
+
+CreateSkillConfigOrDict = Union[CreateSkillConfig, CreateSkillConfigDict]
+
+
+class _CreateSkillRequestParameters(_common.BaseModel):
+    """Parameters for creating a skill."""
+
+    display_name: Optional[str] = Field(
+        default=None, description="""Required. The display name of the Skill."""
+    )
+    description: Optional[str] = Field(
+        default=None, description="""Required. The description of the Skill."""
+    )
+    config: Optional[CreateSkillConfig] = Field(default=None, description="""""")
+
+
+class _CreateSkillRequestParametersDict(TypedDict, total=False):
+    """Parameters for creating a skill."""
+
+    display_name: Optional[str]
+    """Required. The display name of the Skill."""
+
+    description: Optional[str]
+    """Required. The description of the Skill."""
+
+    config: Optional[CreateSkillConfigDict]
+    """"""
+
+
+_CreateSkillRequestParametersOrDict = Union[
+    _CreateSkillRequestParameters, _CreateSkillRequestParametersDict
+]
+
+
+class SkillOperation(_common.BaseModel):
+    """Operation that has a skill as a response."""
+
+    name: Optional[str] = Field(
+        default=None,
+        description="""The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.""",
+    )
+    metadata: Optional[dict[str, Any]] = Field(
+        default=None,
+        description="""Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata.  Any method that returns a long-running operation should document the metadata type, if any.""",
+    )
+    done: Optional[bool] = Field(
+        default=None,
+        description="""If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.""",
+    )
+    error: Optional[dict[str, Any]] = Field(
+        default=None,
+        description="""The error result of the operation in case of failure or cancellation.""",
+    )
+    response: Optional[Skill] = Field(
+        default=None, description="""The created Skill."""
+    )
+
+
+class SkillOperationDict(TypedDict, total=False):
+    """Operation that has a skill as a response."""
+
+    name: Optional[str]
+    """The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`."""
+
+    metadata: Optional[dict[str, Any]]
+    """Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata.  Any method that returns a long-running operation should document the metadata type, if any."""
+
+    done: Optional[bool]
+    """If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available."""
+
+    error: Optional[dict[str, Any]]
+    """The error result of the operation in case of failure or cancellation."""
+
+    response: Optional[SkillDict]
+    """The created Skill."""
+
+
+SkillOperationOrDict = Union[SkillOperation, SkillOperationDict]
+
+
+class GetSkillOperationConfig(_common.BaseModel):
+
+    http_options: Optional[genai_types.HttpOptions] = Field(
+        default=None, description="""Used to override HTTP request options."""
+    )
+
+
+class GetSkillOperationConfigDict(TypedDict, total=False):
+
+    http_options: Optional[genai_types.HttpOptionsDict]
+    """Used to override HTTP request options."""
+
+
+GetSkillOperationConfigOrDict = Union[
+    GetSkillOperationConfig, GetSkillOperationConfigDict
+]
+
+
+class _GetSkillOperationParameters(_common.BaseModel):
+    """Parameters for getting an operation."""
+
+    operation_name: Optional[str] = Field(
+        default=None, description="""The server-assigned name for the operation."""
+    )
+    config: Optional[GetSkillOperationConfig] = Field(
+        default=None, description="""Used to override the default configuration."""
+    )
+
+
+class _GetSkillOperationParametersDict(TypedDict, total=False):
+    """Parameters for getting an operation."""
+
+    operation_name: Optional[str]
+    """The server-assigned name for the operation."""
+
+    config: Optional[GetSkillOperationConfigDict]
+    """Used to override the default configuration."""
+
+
+_GetSkillOperationParametersOrDict = Union[
+    _GetSkillOperationParameters, _GetSkillOperationParametersDict
+]
+
+
 class PromptOptimizerConfig(_common.BaseModel):
     """VAPO Prompt Optimizer Config."""
 

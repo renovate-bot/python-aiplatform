@@ -42,6 +42,7 @@ from .common import _CreateEvaluationSetParameters
 from .common import _CreateMultimodalDatasetParameters
 from .common import _CreateSandboxEnvironmentSnapshotRequestParameters
 from .common import _CreateSandboxEnvironmentTemplateRequestParameters
+from .common import _CreateSkillRequestParameters
 from .common import _CustomJobParameters
 from .common import _CustomJobParameters
 from .common import _DeleteAgentEngineMemoryRequestParameters
@@ -90,6 +91,7 @@ from .common import _GetMultimodalDatasetParameters
 from .common import _GetSandboxEnvironmentSnapshotRequestParameters
 from .common import _GetSandboxEnvironmentTemplateOperationParameters
 from .common import _GetSandboxEnvironmentTemplateRequestParameters
+from .common import _GetSkillOperationParameters
 from .common import _GetSkillRequestParameters
 from .common import _IngestEventsRequestParameters
 from .common import _ListAgentEngineMemoryRequestParameters
@@ -300,6 +302,9 @@ from .common import CreatePromptVersionConfigOrDict
 from .common import CreateSandboxEnvironmentTemplateConfig
 from .common import CreateSandboxEnvironmentTemplateConfigDict
 from .common import CreateSandboxEnvironmentTemplateConfigOrDict
+from .common import CreateSkillConfig
+from .common import CreateSkillConfigDict
+from .common import CreateSkillConfigOrDict
 from .common import CustomCodeExecutionSpec
 from .common import CustomCodeExecutionSpecDict
 from .common import CustomCodeExecutionSpecOrDict
@@ -613,6 +618,9 @@ from .common import GetSandboxEnvironmentTemplateConfigOrDict
 from .common import GetSkillConfig
 from .common import GetSkillConfigDict
 from .common import GetSkillConfigOrDict
+from .common import GetSkillOperationConfig
+from .common import GetSkillOperationConfigDict
+from .common import GetSkillOperationConfigOrDict
 from .common import IdentityType
 from .common import Importance
 from .common import IngestEventsConfig
@@ -1259,6 +1267,9 @@ from .common import SessionEventOrDict
 from .common import SessionOrDict
 from .common import Skill
 from .common import SkillDict
+from .common import SkillOperation
+from .common import SkillOperationDict
+from .common import SkillOperationOrDict
 from .common import SkillOrDict
 from .common import SkillState
 from .common import State
@@ -2511,6 +2522,15 @@ __all__ = [
     "RetrieveSkillsResponse",
     "RetrieveSkillsResponseDict",
     "RetrieveSkillsResponseOrDict",
+    "CreateSkillConfig",
+    "CreateSkillConfigDict",
+    "CreateSkillConfigOrDict",
+    "SkillOperation",
+    "SkillOperationDict",
+    "SkillOperationOrDict",
+    "GetSkillOperationConfig",
+    "GetSkillOperationConfigDict",
+    "GetSkillOperationConfigOrDict",
     "PromptOptimizerConfig",
     "PromptOptimizerConfigDict",
     "PromptOptimizerConfigOrDict",
@@ -2750,6 +2770,8 @@ __all__ = [
     "_OptimizeRequestParameters",
     "_GetSkillRequestParameters",
     "_RetrieveSkillsRequestParameters",
+    "_CreateSkillRequestParameters",
+    "_GetSkillOperationParameters",
     "evals",
     "agent_engines",
     "prompts",
