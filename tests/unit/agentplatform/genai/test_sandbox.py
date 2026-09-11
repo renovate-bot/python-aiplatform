@@ -29,10 +29,7 @@ from google.cloud.aiplatform import initializer
 from vertexai._genai import (
     sandboxes as vertexai_sandboxes,
 )
-from google.genai import client
-from google.genai import types as genai_types
 import pytest
-
 
 _TEST_CREDENTIALS = mock.Mock(spec=auth_credentials.AnonymousCredentials())
 _TEST_LOCATION = "us-central1"
@@ -68,6 +65,7 @@ def google_auth_mock():
 
 @pytest.mark.usefixtures("google_auth_mock")
 class TestSandbox:
+
     def setup_method(self):
         importlib.reload(initializer)
         importlib.reload(aiplatform)
@@ -82,18 +80,18 @@ class TestSandbox:
     def teardown_method(self):
         initializer.global_pool.shutdown(wait=True)
 
-    @mock.patch.object(client.Client, "_get_api_client")
-    def test_send_command(self, mock_get_api_client):
+    @mock.patch.object(sandboxes.requests, "request")
+    def test_send_command(self, mock_request):
         mock_sandbox = mock.Mock()
         mock_sandbox.connection_info.load_balancer_ip = None
         mock_sandbox.connection_info.load_balancer_hostname = (
             "test-us-central1.example.vertexai.goog"
         )
         mock_sandbox.connection_info.routing_token = "test_routing_token"
-        mock_http_client = mock_get_api_client.return_value
-        mock_http_client.request.return_value = genai_types.HttpResponse(
-            body=b"{}", headers={}
-        )
+        mock_response = mock.Mock()
+        mock_response.text = "{}"
+        mock_response.headers = {}
+        mock_request.return_value = mock_response
 
         self.client.sandboxes.send_command(
             http_method="GET",
@@ -102,21 +100,46 @@ class TestSandbox:
             path="test/path",
         )
 
-        call_args = mock_get_api_client.call_args
+        # The sandbox data plane is called with requests, not the genai client.
+        call_args = mock_request.call_args
         assert call_args is not None
-        _, kwargs = call_args
-        http_options = kwargs["http_options"]
-        assert http_options.base_url == (
-            "https://test-us-central1.example.vertexai.goog/test/path"
-        )
-        assert http_options.headers["Authorization"] == "Bearer test_token"
+        args, kwargs = call_args
+        assert args[0] == "GET"
+        assert args[1] == "https://test-us-central1.example.vertexai.goog/test/path"
+        assert kwargs["headers"]["Authorization"] == "Bearer test_token"
+        assert kwargs["headers"]["X-Sandbox-Routing-Token"] == "test_routing_token"
+        # A GET with no request body must not send a JSON payload.
+        assert kwargs["data"] is None
 
-        mock_http_client.request.assert_called_with("GET", "test/path", {})
+    @mock.patch.object(sandboxes.requests, "request")
+    def test_send_command_post_serializes_body(self, mock_request):
+        mock_sandbox = mock.Mock()
+        mock_sandbox.connection_info.load_balancer_ip = None
+        mock_sandbox.connection_info.load_balancer_hostname = (
+            "test-us-central1.example.vertexai.goog"
+        )
+        mock_sandbox.connection_info.routing_token = "test_routing_token"
+        mock_response = mock.Mock()
+        mock_response.text = "{}"
+        mock_response.headers = {}
+        mock_request.return_value = mock_response
+
+        self.client.sandboxes.send_command(
+            http_method="POST",
+            access_token="test_token",
+            sandbox_environment=mock_sandbox,
+            path="cdp",
+            request_dict={"command": "Page.navigate"},
+        )
+
+        _, kwargs = mock_request.call_args
+        assert kwargs["data"] == json.dumps({"command": "Page.navigate"})
+        assert kwargs["headers"]["Content-Type"] == "application/json"
 
     @mock.patch.object(sandboxes.Sandboxes, "generate_access_token")
-    @mock.patch.object(client.Client, "_get_api_client")
+    @mock.patch.object(sandboxes.requests, "request")
     def test_generate_browser_ws_headers(
-        self, mock_get_api_client, mock_generate_access_token
+        self, mock_request, mock_generate_access_token
     ):
         mock_generate_access_token.return_value = "test_token"
 
@@ -126,10 +149,10 @@ class TestSandbox:
             "test-us-central1.example.vertexai.goog"
         )
         mock_sandbox.connection_info.routing_token = "test_routing_token"
-        mock_http_client = mock_get_api_client.return_value
-        mock_http_client.request.return_value = genai_types.HttpResponse(
-            body=b'{"endpoint": "test/endpoint"}', headers={}
-        )
+        mock_response = mock.Mock()
+        mock_response.text = '{"endpoint": "test/endpoint"}'
+        mock_response.headers = {}
+        mock_request.return_value = mock_response
         ws_url, headers = self.client.sandboxes.generate_browser_ws_headers(
             sandbox_environment=mock_sandbox,
             service_account_email=_TEST_SERVICE_ACCOUNT_EMAIL,
@@ -150,7 +173,7 @@ class TestSandbox:
             name=_TEST_AGENT_ENGINE_RESOURCE_NAME,
             spec={"shell_environment": {}},
             config={
-                "sandbox_environment_template": _TEST_SANDBOX_TEMPLATE_RESOURCE_NAME,
+                "sandbox_environment_template": (_TEST_SANDBOX_TEMPLATE_RESOURCE_NAME),
                 "wait_for_completion": False,
             },
         )
@@ -269,7 +292,9 @@ class TestSandbox:
             name=_TEST_AGENT_ENGINE_RESOURCE_NAME,
             spec={"computer_use_environment": {}},
             config={
-                "sandbox_environment_snapshot": "projects/p/locations/l/agentEngines/ae/sandboxEnvironmentSnapshots/s1",
+                "sandbox_environment_snapshot": (
+                    "projects/p/locations/l/agentEngines/ae/sandboxEnvironmentSnapshots/s1"
+                ),
                 "wait_for_completion": False,
             },
         )

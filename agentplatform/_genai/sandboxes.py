@@ -26,7 +26,6 @@ from typing import Any, Iterator, Optional, Union
 from urllib.parse import urlencode
 
 from google import auth as google_auth
-from google import genai
 from google.auth.transport import requests as google_auth_requests
 from google.genai import _api_module
 from google.genai import _common
@@ -34,6 +33,7 @@ from google.genai import types as genai_types
 from google.genai._common import get_value_by_path as getv
 from google.genai._common import set_value_by_path as setv
 from google.genai.pagers import Pager
+import requests
 
 from . import _runtimes_utils
 from . import types
@@ -1408,15 +1408,27 @@ class Sandboxes(_api_module.BaseModule):
         headers["Authorization"] = f"Bearer {access_token}"
         headers["X-Sandbox-Routing-Token"] = routing_token
         headers["X-Sandbox-Port"] = port
-        endpoint = endpoint + path if path.startswith("/") else endpoint + "/" + path
-        http_options = genai_types.HttpOptions(headers=headers, base_url=endpoint)
-        http_client = genai.Client(vertexai=True, http_options=http_options)
-        # Full path is constructed in this function. The passed in path into request
-        # function will not be used.
-        response = http_client._api_client.request(http_method, path, request_dict)
+        url = endpoint + path if path.startswith("/") else endpoint + "/" + path
+        # The sandbox data plane authenticates via the Authorization,
+        # X-Sandbox-Routing-Token and X-Sandbox-Port headers set above, not via
+        # ADC. Routing this through genai.Client(vertexai=True) builds an
+        # authorized session with no credentials, whose request() then fails with
+        # "'NoneType' object has no attribute 'before_request'". Issue the request
+        # directly instead, mirroring generate_access_token above which also talks
+        # to a non-aiplatform endpoint with plain requests.
+        body = None
+        if request_dict:
+            body = json.dumps(request_dict)
+            headers.setdefault("Content-Type", "application/json")
+        response = requests.request(
+            http_method,
+            url,
+            headers=headers,
+            data=body,
+        )
         return genai_types.HttpResponse(
-            headers=response.headers,
-            body=response.body,
+            headers=dict(response.headers),
+            body=response.text,
         )
 
     def generate_browser_ws_headers(
